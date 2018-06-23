@@ -37,7 +37,7 @@ node('ubuntu') {
             dir('build') {
                 try {
                     withEnv(["PATH+MAVEN=$MAVEN_BUILD/bin","PATH+JDK=$JAVA7_HOME/bin"]) {
-                        sh "mvn clean verify -B -U -e -fae -V -Dmaven.test.failure.ignore=true -Dmaven.repo.local=$WORK_DIR/.repository"
+                        sh "mvn clean verify -B -U -e -fae -V -Dmaven.test.failure.ignore=true -Dmaven.repo.local=$WORK_DIR/.repository -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2"
                     }
                 } finally {
                     junit allowEmptyResults: true, testResults:'**/target/*-reports/*.xml'
