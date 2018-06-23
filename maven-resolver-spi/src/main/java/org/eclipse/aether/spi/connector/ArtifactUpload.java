@@ -25,6 +25,7 @@ import org.eclipse.aether.RequestTrace;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.transfer.ArtifactTransferException;
 import org.eclipse.aether.transfer.TransferListener;
+import org.eclipse.aether.transform.FileTransformer;
 
 /**
  * An upload of an artifact to a remote repository. A repository connector processing this upload has to use
@@ -33,6 +34,7 @@ import org.eclipse.aether.transfer.TransferListener;
 public final class ArtifactUpload
     extends ArtifactTransfer
 {
+    private FileTransformer fileTransformer;
 
     /**
      * Creates a new uninitialized upload.
@@ -52,6 +54,13 @@ public final class ArtifactUpload
     {
         setArtifact( artifact );
         setFile( file );
+    }
+
+    public ArtifactUpload( Artifact artifact, File file, FileTransformer fileTransformer )
+    {
+        setArtifact( artifact );
+        setFile( file );
+        setFileTransformer( fileTransformer );
     }
 
     @Override
@@ -88,11 +97,30 @@ public final class ArtifactUpload
         super.setTrace( trace );
         return this;
     }
+    
+    public ArtifactUpload setFileTransformer( FileTransformer fileTransformer )
+    {
+        this.fileTransformer = fileTransformer;
+        return this;
+    }
+    
+    public FileTransformer getFileTransformer()
+    {
+        return fileTransformer;
+    }
 
     @Override
     public String toString()
     {
-        return getArtifact() + " - " + getFile();
+        if ( getFileTransformer() != null )
+        {
+            return getArtifact() + " >>> " + getFileTransformer().transformArtifact( getArtifact() )
+                + " - " + getFile();
+        }
+        else
+        {
+            return getArtifact() + " - " + getFile();
+        }
     }
 
 }

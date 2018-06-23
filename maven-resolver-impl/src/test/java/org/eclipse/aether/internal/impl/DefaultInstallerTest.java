@@ -21,8 +21,13 @@ package org.eclipse.aether.internal.impl;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -42,6 +47,8 @@ import org.eclipse.aether.internal.test.util.TestUtils;
 import org.eclipse.aether.metadata.DefaultMetadata;
 import org.eclipse.aether.metadata.Metadata;
 import org.eclipse.aether.metadata.Metadata.Nature;
+import org.eclipse.aether.transform.FileTransformer;
+import org.eclipse.aether.util.artifact.SubArtifact;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -409,5 +416,45 @@ public class DefaultInstallerTest
 
         assertEquals( "artifact timestamp was not set to src file", artifact.getFile().lastModified(),
                       localArtifactFile.lastModified() );
+    }
+    
+    @Test
+    public void testFileTransformer() throws Exception
+    {
+        final Artifact transformedArtifact = new SubArtifact( artifact, null, "raj" );
+        FileTransformer transformer = new FileTransformer()
+        {
+            @Override
+            public InputStream transformData( File file )
+                throws IOException
+            {
+                return new ByteArrayInputStream( "transformed data".getBytes( Charset.forName( "UTF-8" ) ) );
+            }
+            
+            @Override
+            public Artifact transformArtifact( Artifact artifact )
+            {
+                return transformedArtifact;
+            }
+        };
+        
+        StubFileTransformerManager fileTransformerManager = new StubFileTransformerManager();
+        fileTransformerManager.addFileTransformer( transformer, "jar" );
+        session.setFileTransformerManager( fileTransformerManager );
+        
+        request = new InstallRequest();
+        request.addArtifact( artifact );
+        installer.install( session, request );
+        
+        assertFalse( localArtifactFile.exists() );
+        
+        String transformedArtifactPath = session.getLocalRepositoryManager().getPathForLocalArtifact( transformedArtifact );
+        File transformedArtifactFile = new File( session.getLocalRepository().getBasedir(), transformedArtifactPath );
+        assertTrue( transformedArtifactFile.exists() );
+        
+        try ( BufferedReader r = new BufferedReader( new FileReader( transformedArtifactFile ) ) )
+        {
+            assertEquals( "transformed data", r.readLine() );
+        }
     }
 }
