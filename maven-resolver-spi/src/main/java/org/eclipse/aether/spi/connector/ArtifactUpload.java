@@ -56,6 +56,13 @@ public final class ArtifactUpload
         setFile( file );
     }
 
+    /**
+     * Creates a new upload with the specified properties.
+     * 
+     * @param artifact The artifact to upload, may be {@code null}.
+     * @param file The local file to upload the artifact from, may be {@code null}.
+     * @param fileTransformer The file transformer, may be {@code null}.
+     */
     public ArtifactUpload( Artifact artifact, File file, FileTransformer fileTransformer )
     {
         setArtifact( artifact );
