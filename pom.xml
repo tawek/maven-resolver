@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>31</version>
+    <version>33</version>
   </parent>
 
   <groupId>org.apache.maven.resolver</groupId>
@@ -64,7 +64,6 @@
   <properties>
     <javaVersion>7</javaVersion>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <surefire.version>2.22.0</surefire.version>
     <maven.site.path>resolver-archives/resolver-LATEST</maven.site.path>
     <checkstyle.violation.ignore>UnusedImports,LineLength,InnerAssignment,MagicNumber,AvoidNestedBlocks,ParameterNumber,MethodLength,MemberName</checkstyle.violation.ignore>
     <sisuVersion>0.3.3</sisuVersion>
@@ -157,12 +156,6 @@
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-annotations</artifactId>
-        <version>1.7.1</version>
         <scope>provided</scope>
       </dependency>
 
@@ -317,19 +310,6 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-component-metadata</artifactId>
-          <executions>
-            <execution>
-              <id>generate-components-xml</id>
-              <phase>process-classes</phase>
-              <goals>
-                <goal>generate-metadata</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.eclipse.sisu</groupId>
           <artifactId>sisu-maven-plugin</artifactId>
           <version>${sisuVersion}</version>
@@ -351,6 +331,7 @@
               <exclude>src/test/resources/**/*.ini</exclude>
               <exclude>src/test/resources/**/*.txt</exclude>
               <exclude>src/test/resources/ssl/*-store</exclude>
+              <exclude>.travis.yml</exclude>
             </excludes>
           </configuration>
         </plugin>
